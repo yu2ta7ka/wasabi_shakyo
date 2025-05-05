@@ -145,8 +145,8 @@ fn efi_main(_image_handle: EfiHandle, efi_system_table: &EfiSystemTable) {
         let _ = draw_line(&mut vram, 0xffffff, cx, cy, i, rect_size);
     }
 
-    for(i,c) in "ABCDEF".chars().enumerate(){
-        draw_font_fg(&mut vram, i as i64 * 16 + 256, i as i64 * 16, 0xffffff,c);
+    for (i, c) in "ABCDEF".chars().enumerate() {
+        draw_font_fg(&mut vram, i as i64 * 16 + 256, i as i64 * 16, 0xffffff, c);
     }
 
     //println!("Hello, world!");
@@ -286,17 +286,11 @@ fn draw_line<T: Bitmap>(buf: &mut T, color: u32, x0: i64, y0: i64, x1: i64, y1: 
     let sy = (y1 - y0).signum();
 
     if dx >= dy {
-        for (rx, ry) in (0..dx)
-            .flat_map(|rx| calc_slope_point(dx, dy, rx)
-            .map(|ry| (rx, ry)))
-        {
+        for (rx, ry) in (0..dx).flat_map(|rx| calc_slope_point(dx, dy, rx).map(|ry| (rx, ry))) {
             draw_point(buf, color, x0 + rx * sx, y0 + ry * sy)?;
         }
     } else {
-        for (rx, ry) in (0..dy)
-            .flat_map(|ry| calc_slope_point(dy, dx, ry)
-            .map(|rx| (rx, ry)))
-        {
+        for (rx, ry) in (0..dy).flat_map(|ry| calc_slope_point(dy, dx, ry).map(|rx| (rx, ry))) {
             draw_point(buf, color, x0 + rx * sx, y0 + ry * sy)?;
         }
     }
@@ -304,36 +298,42 @@ fn draw_line<T: Bitmap>(buf: &mut T, color: u32, x0: i64, y0: i64, x1: i64, y1: 
     Ok(())
 }
 
-fn draw_font_fg<T: Bitmap>(buf: &mut T, x: i64, y: i64, color: u32, c: char){
-    if let Ok(_c) = u8::try_from(c){
-        let font_a = "
-........
-...**...
-...**...
-...**...
-...**...
-..*..*..
-..*..*..
-..*..*..
-..*..*..
-.******.
-.*....*.
-.*....*.
-.*....*.
-***..***
-........
-........
-";
- 
-        for (dy, row) in font_a.trim().split('\n').enumerate() {
-            for (dx, pixel) in row.chars().enumerate(){
-                let color = match pixel{
-                    '*' => color,
-                    _ => continue,
-                };
-                let _ = draw_point(buf, color, x+dx as i64, y+dy as i64);
+fn lookup_font(c: char) -> Option<[[char; 8]; 16]> {
+    const FONT_SOURCE: &str = include_str!("./font.txt");
+    if let Ok(c) = u8::try_from(c) {
+        let mut fi = FONT_SOURCE.split('\n');
+        while let Some(line) = fi.next() {
+            if let Some(line) = line.strip_prefix("0x") {
+                if let Ok(idx) = u8::from_str_radix(line, 16) {
+                    if idx != c {
+                        continue;
+                    }
+                    let mut font = [['*'; 8]; 16];
+                    for (y, line) in fi.clone().take(16).enumerate() {
+                        for (x, c) in line.chars().enumerate() {
+                            if let Some(e) = font[y].get_mut(x) {
+                                *e = c;
+                            }
+                        }
+                    }
+                    return Some(font);
+                }
             }
         }
     }
+    None
+}
 
+fn draw_font_fg<T: Bitmap>(buf: &mut T, x: i64, y: i64, color: u32, c: char) {
+    if let Some(font) = lookup_font(c) {
+        for (dy, row) in font.iter().enumerate() {
+            for (dx, pixel) in row.iter().enumerate() {
+                let color = match pixel {
+                    '*' => color,
+                    _ => continue,
+                };
+                let _ = draw_point(buf, color, x + dx as i64, y + dy as i64);
+            }
+        }
+    }
 }
