@@ -11,7 +11,12 @@ pub trait Bitmap {
     /// # safety
     /// Returned pointer is valid as long as the given condinates are valid
     /// which means that passing is_in_*range tests.
+    // バッファ内の任意座標のピクセルへのポインタを返す
     unsafe fn unchecked_pixel_at_mut(&mut self, x: i64, y: i64) -> *mut u32 {
+        // 1. self.buf_mut()でバッファの先頭アドレスを取得。
+        // 2. (y * self.pixels_per_line() + x)で、バッファ内のピクセルのインデックスを計算。
+        // 3. それにbytes_per_pixel()を掛けて、バイト単位のオフセットを算出。
+        // 4. 先頭アドレスにオフセットを加算(.add)し、*mut u32型にキャストして返す。
         self.buf_mut()
             .add(((y * self.pixels_per_line() + x) * self.bytes_per_pixel()) as usize)
             as *mut u32
@@ -36,6 +41,7 @@ pub trait Bitmap {
 
 /// # Safety
 /// (x,y) must be a valid point in the buf.
+// unchecked_pixel_at_mutで計算したアドレスのピクセルに色を書き込む
 unsafe fn unchecked_draw_point<T: Bitmap>(buf: &mut T, color: u32, x: i64, y: i64) {
     *buf.unchecked_pixel_at_mut(x, y) = color;
 }
