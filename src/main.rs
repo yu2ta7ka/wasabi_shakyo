@@ -34,6 +34,7 @@ fn efi_main(image_handle: EfiHandle, efi_system_table: &EfiSystemTable) {
 
     exit_from_efi_boot_services(image_handle, efi_system_table, &mut memory_map);
 
+    // 画面全体を黒色で初期化する
     let vw = vram.width();
     let vh = vram.height();
     fill_rect(&mut vram, 0x000000, 0, 0, vw, vh).expect("fill_rect failed");
@@ -61,8 +62,6 @@ fn efi_main(image_handle: EfiHandle, efi_system_table: &EfiSystemTable) {
     .unwrap();
 
     writeln!(w, "Hello, Non-UEFI world!").unwrap();
-
-
 
     loop {
         hlt()

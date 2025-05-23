@@ -132,7 +132,7 @@ impl<'a> Iterator for MemoryMapIterator<'a> {
 pub struct EfiBootServicesTable {
     // 予約領域で、UEFI の仕様に従って確保
     _reserved0: [u64; 7],
-    // 下記の実装
+    // メモリマップ(UEFIが管理している物理メモリ領域の情報)を取得する。
     // https://uefi.org/specs/UEFI/2.11/07_Services_Boot_Services.html#efi-boot-services-getmemorymap
     get_memory_map: extern "win64" fn(
         memory_map_size: *mut usize,
@@ -143,10 +143,11 @@ pub struct EfiBootServicesTable {
     ) -> EfiStatus,
     _reserved1: [u64; 21],
     // すべてのブートサービスを終了する。UEFI無し、ベアメタル環境にする。
-    // https://uefi.org/specs/UEFI/2.9_A/07_Services_Boot_Services.html#efi-boot-services-exitbootservices
+    // https://uefi.org/specs/UEFI/2.11/07_Services_Boot_Services.html#efi-boot-services-exitbootservices
     exit_boot_services: extern "win64" fn(image_handle: EfiHandle, map_key: usize) -> EfiStatus,
     _reserved2: [u64; 10],
-    // 指定されたプロトコル GUID に基づいてプロトコルインターフェースを検索します。
+    // 指定されたプロトコル GUID に基づいてプロトコルインターフェースを検索する。
+    // https://uefi.org/specs/UEFI/2.11/07_Services_Boot_Services.html#efi-boot-services-locateprotocol
     locate_protocol: extern "win64" fn(
         protocol: *const EfiGuid,
         registration: *const EfiVoid,
