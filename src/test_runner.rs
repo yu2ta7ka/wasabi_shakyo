@@ -9,5 +9,5 @@ pub fn test_runner(_tests: &[&dyn FnOnce()]) -> ! {
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     // パニックが発生した場合、QEMU を終了します。
-    exit_qemu(QemuExitCode::Failure);
+    exit_qemu(QemuExitCode::Fail);
 }
