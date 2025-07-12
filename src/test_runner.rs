@@ -5,7 +5,7 @@ use core::any::type_name;
 use core::fmt::Write;
 use core::panic::PanicInfo;
 
-pub trait Testable{
+pub trait Testable {
     fn run(&self, writer: &mut SerialPort);
 }
 
@@ -23,10 +23,10 @@ where
 pub fn test_runner(tests: &[&dyn Testable]) -> ! {
     let mut sw = SerialPort::new_for_com1();
     writeln!(sw, "Running {} test...", tests.len()).unwrap();
-    for test in tests{
+    for test in tests {
         test.run(&mut sw);
     }
-    writeln!(sw,"Completed {} tests!", tests.len()).unwrap();
+    writeln!(sw, "Completed {} tests!", tests.len()).unwrap();
     exit_qemu(QemuExitCode::Success)
 }
 

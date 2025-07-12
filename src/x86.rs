@@ -4,7 +4,7 @@ pub fn hlt() {
     unsafe { asm!("hlt") }
 }
 
-pub fn busy_loop_hint(){
+pub fn busy_loop_hint() {
     unsafe { asm!("pause") }
 }
 
