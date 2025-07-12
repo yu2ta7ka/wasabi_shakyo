@@ -22,17 +22,16 @@ pub fn round_up_to_nearest_pow2(v: usize) -> Result<usize> {
 }
 #[test_case]
 fn round_up_to_nearest_pow2_tests() {
-    unimplemented!("Cargo test should fail , ")
-/*     assert_eq!(round_up_to_nearest_pow2(0).unwrap(), 1);
-    assert_eq!(round_up_to_nearest_pow2(1).unwrap(), 1);
-    assert_eq!(round_up_to_nearest_pow2(2).unwrap(), 2);
-    assert_eq!(round_up_to_nearest_pow2(3).unwrap(), 4);
-    assert_eq!(round_up_to_nearest_pow2(4).unwrap(), 4);
-    assert_eq!(round_up_to_nearest_pow2(5).unwrap(), 8);
-    assert_eq!(round_up_to_nearest_pow2(6).unwrap(), 8);
-    assert_eq!(round_up_to_nearest_pow2(7).unwrap(), 8);
-    assert_eq!(round_up_to_nearest_pow2(8).unwrap(), 8);
-    assert_eq!(round_up_to_nearest_pow2(9).unwrap(), 16); */
+    assert_eq!(round_up_to_nearest_pow2(0), Err("Out of range"));
+    assert_eq!(round_up_to_nearest_pow2(1), Ok(1));
+    assert_eq!(round_up_to_nearest_pow2(2), Ok(2));
+    assert_eq!(round_up_to_nearest_pow2(3), Ok(4));
+    assert_eq!(round_up_to_nearest_pow2(4), Ok(4));
+    assert_eq!(round_up_to_nearest_pow2(5), Ok(8));
+    assert_eq!(round_up_to_nearest_pow2(6), Ok(8));
+    assert_eq!(round_up_to_nearest_pow2(7), Ok(8));
+    assert_eq!(round_up_to_nearest_pow2(8), Ok(8));
+    assert_eq!(round_up_to_nearest_pow2(9), Ok(16));
 }
 /// Vertical bar '|' represents the cunk that has a Header.
 /// befor: |--prev-------|----self------------------
@@ -221,3 +220,4 @@ impl FierstFitAllocator {
         // so that they can't be marged anyway.
     }
 }
+
